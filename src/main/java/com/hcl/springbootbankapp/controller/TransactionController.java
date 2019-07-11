@@ -15,41 +15,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.springbootbankapp.entity.Account;
 import com.hcl.springbootbankapp.model.FundTransferRequest;
-import com.hcl.springbootbankapp.service.DatabaseService;
+import com.hcl.springbootbankapp.service.TransactionService;
 
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
 
 	@Autowired
-	DatabaseService databaseService;
+	TransactionService transactionService;
 
 	@GetMapping("/payee/{accountNO}")
 	public ResponseEntity<?> getPayee(@PathVariable Long accountNO) {
-		List<Account> payees = databaseService.getPayees(accountNO);
+		List<Account> payees = transactionService.getPayees(accountNO);
 		return new ResponseEntity<List<Account>>(payees, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/fundTransfer")
-	public String fundTransafer(@RequestBody FundTransferRequest lFundTransferRequest){
+	public String fundTransafer(@RequestBody FundTransferRequest lFundTransferRequest) {
 		String lStatus;
 		try {
-			 validateRequest(lFundTransferRequest);
+			validateRequest(lFundTransferRequest);
 		} catch (Exception e) {
 			return "Invalid Request. Error Message : " + e.getMessage();
 		}
 
 		try {
-			lStatus = databaseService.fundTransfer(lFundTransferRequest);
+			lStatus = transactionService.fundTransfer(lFundTransferRequest);
 			System.out.println(lStatus);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return "Error Message : " + e.getMessage();
 		}
 		return lStatus;
-		
+
 	}
-	
-	
+
 	private boolean validateRequest(FundTransferRequest lFundTransferRequest) throws Exception {
 
 		if (StringUtils.isEmpty(lFundTransferRequest.getPayeeAccountNo())) {
@@ -61,5 +60,5 @@ public class TransactionController {
 		return true;
 
 	}
-	
+
 }

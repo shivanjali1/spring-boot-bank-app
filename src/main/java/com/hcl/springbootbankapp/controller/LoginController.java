@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.springbootbankapp.entity.TransactionHistory;
 import com.hcl.springbootbankapp.entity.User;
-import com.hcl.springbootbankapp.service.DatabaseService;
+import com.hcl.springbootbankapp.service.LoginService;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
 	
 	@Autowired
-	DatabaseService databaseService;
+	LoginService loginService;
 	
 	@PostMapping("/user")
 	public ResponseEntity<?> loginUser(@RequestBody User lUser){
 		List<TransactionHistory> lTransactions=null;
 		try {
-			 lTransactions = databaseService.loginUser(lUser);
+			 lTransactions = loginService.loginUser(lUser);
 			System.out.println("User is sucessfully login");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

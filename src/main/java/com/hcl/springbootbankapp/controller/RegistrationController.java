@@ -13,18 +13,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.springbootbankapp.entity.User;
-import com.hcl.springbootbankapp.model.UserDTO;
-import com.hcl.springbootbankapp.service.DatabaseService;
+import com.hcl.springbootbankapp.service.RegistrationService;
 
 @RestController
 @RequestMapping("/register")
 public class RegistrationController {
 
 	@Autowired
-	DatabaseService databaseService;
+	RegistrationService registrationService;
 
 	@PostMapping("/user")
-	public ResponseEntity<?> registerUser(@RequestBody UserDTO user) {
+	public ResponseEntity<?> registerUser(@RequestBody User user) {
 		boolean isValidUser;
 		User lRegisteredUser = null;
 
@@ -37,7 +36,7 @@ public class RegistrationController {
 		}
 
 		if (isValidUser) {
-			lRegisteredUser = databaseService.registerUser(user);
+			lRegisteredUser = registrationService.registerUser(user);
 		}
 
 		if (lRegisteredUser != null) {
@@ -50,7 +49,7 @@ public class RegistrationController {
 
 	@GetMapping("/users")
 	public List<User> getAllUsers() {
-		return databaseService.getUser();
+		return registrationService.getUser();
 	}
 
 	private boolean validateUser(User user) throws Exception {
