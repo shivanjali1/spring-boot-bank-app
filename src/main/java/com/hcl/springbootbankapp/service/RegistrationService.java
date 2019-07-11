@@ -11,6 +11,9 @@ import com.hcl.springbootbankapp.repository.AccountRepository;
 import com.hcl.springbootbankapp.repository.TransactionHistoryRepository;
 import com.hcl.springbootbankapp.repository.UserRepository;
 
+/*
+ * This is RegistrationService class used user registration service
+ */
 @Service
 public class RegistrationService {
 	
@@ -23,19 +26,28 @@ public class RegistrationService {
 	@Autowired
 	TransactionHistoryRepository transactionHistoryRepository;
 	
+	/*
+	 * This method is for user registration
+	 * @param user gets username and password
+	 * @return returns registered user 
+	 */
 	public User registerUser(User lUser) {
-		User lSavedUser = userRepository.save(lUser);
-		Long lAccountNo = (long) (Math.random() * 100000 + 3333300000L);
+		User savedUser = userRepository.save(lUser);
+		Long accountNo = (long) (Math.random() * 100000 + 3333300000L);
 
-		Account lAccount = new Account();
-		lAccount.setAccountBalance(10000.0);
-		lAccount.setAccountNo(lAccountNo);
-		lAccount.setUserName(lSavedUser.getUsername());
+		Account account = new Account();
+		account.setAccountBalance(10000.0);
+		account.setAccountNo(accountNo);
+		account.setUserName(savedUser.getUsername());
 
-		accountRepository.save(lAccount);
-		return lSavedUser;
+		accountRepository.save(account);
+		return savedUser;
 	}
 	
+	/*
+	 * This method is to get all users
+	 * @return returns list of all users
+	 */
 	public List<User> getUser() {
 		return userRepository.findAll();
 	}

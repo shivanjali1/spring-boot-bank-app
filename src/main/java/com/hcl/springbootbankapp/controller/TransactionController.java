@@ -17,35 +17,48 @@ import com.hcl.springbootbankapp.entity.Account;
 import com.hcl.springbootbankapp.model.FundTransferRequest;
 import com.hcl.springbootbankapp.service.TransactionService;
 
+/*
+ * This is TransactionController class used for fund transfer 
+ */
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
 
 	@Autowired
 	TransactionService transactionService;
-
+	
+	/*
+	 * This method is used to get all payees
+	 * @param accountNO gets account Number
+	 * @return return list of all payees
+	 */
 	@GetMapping("/payee/{accountNO}")
 	public ResponseEntity<?> getPayee(@PathVariable Long accountNO) {
 		List<Account> payees = transactionService.getPayees(accountNO);
 		return new ResponseEntity<List<Account>>(payees, HttpStatus.OK);
 	}
 
+	/*
+	 * This method is used for fund transfer
+	 * @param fundTransferRequest gets own login id, payee account number and transfer amount
+	 * @returns fund transfer status
+	 */
 	@PostMapping("/fundTransfer")
-	public String fundTransafer(@RequestBody FundTransferRequest lFundTransferRequest) {
-		String lStatus;
+	public ResponseEntity<String> fundTransafer(@RequestBody FundTransferRequest fundTransferRequest) {
+		String status;
 		try {
-			validateRequest(lFundTransferRequest);
+			validateRequest(fundTransferRequest);
 		} catch (Exception e) {
-			return "Invalid Request. Error Message : " + e.getMessage();
+			return new ResponseEntity<String>("Invalid Request. Error Message : " + e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 
 		try {
-			lStatus = transactionService.fundTransfer(lFundTransferRequest);
-			System.out.println(lStatus);
+			status = transactionService.fundTransfer(fundTransferRequest);
+			System.out.println(status);
 		} catch (Exception e) {
-			return "Error Message : " + e.getMessage();
+			return new ResponseEntity<String>("Error Message : " + e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return lStatus;
+		return new ResponseEntity<String>(status, HttpStatus.OK);
 
 	}
 

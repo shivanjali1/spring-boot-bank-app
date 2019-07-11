@@ -16,6 +16,9 @@ import com.hcl.springbootbankapp.repository.AccountRepository;
 import com.hcl.springbootbankapp.repository.TransactionHistoryRepository;
 import com.hcl.springbootbankapp.repository.UserRepository;
 
+/*
+ * This is LoginService class used to provide user login services
+ */
 @Service
 public class LoginService {
 	
@@ -28,12 +31,17 @@ public class LoginService {
 	@Autowired
 	TransactionHistoryRepository transactionHistoryRepository;
 
-	public List<TransactionHistory> loginUser(User pUser) throws Exception {
-		Optional<User> lUser = userRepository.findByUsernameAndPassword(pUser.getUsername(), pUser.getPassword());
+	/*
+	 * This method is used by user to login
+	 * @param user to get username and password
+	 * @return returns list of last 10 transaction history of login user.
+	 */
+	public List<TransactionHistory> loginUser(User user) throws Exception {
+		Optional<User> OptionalUser = userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
 		
-		boolean isPresent = lUser.isPresent();
+		boolean isPresent = OptionalUser.isPresent();
 		if (isPresent) {
-			Account lAccount = accountRepository.findByUserName(lUser.get().getUsername());
+			Account lAccount = accountRepository.findByUserName(OptionalUser.get().getUsername());
 
 			Pageable sortedByTransactionTime = PageRequest.of(0, 2, Sort.by("transactionTime").descending());
 			List<TransactionHistory> lTenTransactionByAccountNo = transactionHistoryRepository

@@ -27,54 +27,65 @@ public class TransactionService {
 	@Autowired
 	TransactionHistoryRepository transactionHistoryRepository;
 
+	/*
+	 * This method is used to get all payees
+	 * 
+	 * @param accountNO gets account Number
+	 * 
+	 * @return return list of all payees
+	 */
 	public List<Account> getPayees(Long pAccountNo) {
 		return accountRepository.findByAccountNoNotIn(pAccountNo);
 	}
 
+	/*
+	 * This method is used for fund transfer
+	 * @param fundTransferRequest gets own login id, payee account number and
+	 * transfer amount
+	 * @returns fund transfer status
+	 */
 	@Transactional
-	public String fundTransfer(FundTransferRequest lFundTransferRequest) throws Exception {
-		Account lAccount = accountRepository.findByUserName(lFundTransferRequest.getUsername());
-		Long lOwnAccountNo = lAccount.getAccountNo();
-		Long lPayeeAccountNo = lFundTransferRequest.getPayeeAccountNo();
-		Double lTransferamt = lFundTransferRequest.getTrsandferAmt();
-		List<Account> payees = accountRepository.findByAccountNoNotIn(lOwnAccountNo);
+	public String fundTransfer(FundTransferRequest fundTransferRequest) throws Exception {
+		Account account = accountRepository.findByUserName(fundTransferRequest.getUsername());
+		Long ownAccountNo = account.getAccountNo();
+		Long payeeAccountNo = fundTransferRequest.getPayeeAccountNo();
+		Double transferamt = fundTransferRequest.getTrsandferAmt();
+		List<Account> payees = accountRepository.findByAccountNoNotIn(ownAccountNo);
 
 		boolean isValidPayee = false;
-		for (Account laccountlist : payees) {
-			if (!laccountlist.getAccountNo().equals(lOwnAccountNo)) {
+		for (Account accountlist : payees) {
+			if (!accountlist.getAccountNo().equals(ownAccountNo)) {
 				isValidPayee = true;
 			}
 		}
 
 		if (isValidPayee) {
-			Account lOwnAccount = accountRepository.findByAccountNo(lOwnAccountNo);
-			Account lPayeeAccount = accountRepository.findByAccountNo(lPayeeAccountNo);
-			
-			lOwnAccount.setAccountBalance(lOwnAccount.getAccountBalance() - lTransferamt);
-			accountRepository.save(lOwnAccount);
-			
-			lPayeeAccount.setAccountBalance(lPayeeAccount.getAccountBalance() + lTransferamt);
-			accountRepository.save(lPayeeAccount);
+			Account ownAccount = accountRepository.findByAccountNo(ownAccountNo);
+			Account payeeAccount = accountRepository.findByAccountNo(payeeAccountNo);
 
-			TransactionHistory lOwnTransactionHistory = new TransactionHistory();
-			lOwnTransactionHistory.setAccountNo(lOwnAccountNo);
-			lOwnTransactionHistory.setFinalBalance(lOwnAccount.getAccountBalance() - lTransferamt);
-			lOwnTransactionHistory.setTransactionTime(LocalDateTime.now());
-			lOwnTransactionHistory.setTransactionType("Debit");
-			lOwnTransactionHistory.setTrsansactionAmt(lTransferamt);
+			ownAccount.setAccountBalance(ownAccount.getAccountBalance() - transferamt);
+			accountRepository.save(ownAccount);
 
-			transactionHistoryRepository.save(lOwnTransactionHistory);
+			payeeAccount.setAccountBalance(payeeAccount.getAccountBalance() + transferamt);
+			accountRepository.save(payeeAccount);
 
-			TransactionHistory lPayeeTransactionHistory = new TransactionHistory();
-			lPayeeTransactionHistory.setAccountNo(lPayeeAccountNo);
-			lPayeeTransactionHistory.setFinalBalance(lPayeeAccount.getAccountBalance() + lTransferamt);
-			lPayeeTransactionHistory.setTransactionTime(LocalDateTime.now());
-			lPayeeTransactionHistory.setTransactionType("Credit");
-			lPayeeTransactionHistory.setTrsansactionAmt(lTransferamt);
+			TransactionHistory ownTransactionHistory = new TransactionHistory();
+			ownTransactionHistory.setAccountNo(ownAccountNo);
+			ownTransactionHistory.setFinalBalance(ownAccount.getAccountBalance() - transferamt);
+			ownTransactionHistory.setTransactionTime(LocalDateTime.now());
+			ownTransactionHistory.setTransactionType("Debit");
+			ownTransactionHistory.setTrsansactionAmt(transferamt);
 
-			transactionHistoryRepository.save(lPayeeTransactionHistory);
-			
-			
+			transactionHistoryRepository.save(ownTransactionHistory);
+
+			TransactionHistory payeeTransactionHistory = new TransactionHistory();
+			payeeTransactionHistory.setAccountNo(payeeAccountNo);
+			payeeTransactionHistory.setFinalBalance(payeeAccount.getAccountBalance() + transferamt);
+			payeeTransactionHistory.setTransactionTime(LocalDateTime.now());
+			payeeTransactionHistory.setTransactionType("Credit");
+			payeeTransactionHistory.setTrsansactionAmt(transferamt);
+
+			transactionHistoryRepository.save(payeeTransactionHistory);
 
 		}
 

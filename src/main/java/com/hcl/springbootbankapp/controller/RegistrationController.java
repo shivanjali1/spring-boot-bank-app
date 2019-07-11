@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hcl.springbootbankapp.entity.User;
 import com.hcl.springbootbankapp.service.RegistrationService;
 
+/*
+ * This is RegistrationController class used user registration
+ */
 @RestController
 @RequestMapping("/register")
 public class RegistrationController {
@@ -22,10 +25,15 @@ public class RegistrationController {
 	@Autowired
 	RegistrationService registrationService;
 
+	/*
+	 * This method is for user registration
+	 * @param user gets username and password
+	 * @return returns registered user 
+	 */
 	@PostMapping("/user")
 	public ResponseEntity<?> registerUser(@RequestBody User user) {
 		boolean isValidUser;
-		User lRegisteredUser = null;
+		User registeredUser = null;
 
 		try {
 			isValidUser = validateUser(user);
@@ -36,17 +44,21 @@ public class RegistrationController {
 		}
 
 		if (isValidUser) {
-			lRegisteredUser = registrationService.registerUser(user);
+			registeredUser = registrationService.registerUser(user);
 		}
 
-		if (lRegisteredUser != null) {
+		if (registeredUser != null) {
 			System.out.println("User sucessfully registered");
-			return new ResponseEntity<User>(lRegisteredUser, HttpStatus.OK);
+			return new ResponseEntity<User>(registeredUser, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>("Not able to register User", HttpStatus.BAD_REQUEST);
 		}
 	}
 
+	/*
+	 * This method is to get all users
+	 * @return returns list of all users
+	 */
 	@GetMapping("/users")
 	public List<User> getAllUsers() {
 		return registrationService.getUser();

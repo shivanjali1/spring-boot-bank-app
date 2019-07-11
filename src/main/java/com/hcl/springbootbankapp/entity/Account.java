@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/*
+ * This is account entity
+ */
 @Entity
 @Table(name = "account")
 public class Account {

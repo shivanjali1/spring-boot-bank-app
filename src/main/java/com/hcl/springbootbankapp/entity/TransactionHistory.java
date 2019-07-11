@@ -9,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/*
+ * This is TransactionHistory entity
+ */
 @Entity
 @Table(name = "transaction_history")
 public class TransactionHistory {
